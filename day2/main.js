@@ -8,7 +8,7 @@ const availableBlue = 14;
 // TODO: This should maybe be read from a second input file I think. For now, this will do.
 
 try {
-  let contents = (await readFile('./input.txt', { encoding: 'utf8' })).trim();
+  const contents = (await readFile('./input.txt', { encoding: 'utf8' })).trim();
   // read the file "input.txt" in the same folder with utf8 encoding, removing leading and training white space.
   // create a constant "const" with the name "contents" and write the contents of the read file there.
   // use "const" instead of "let" ("var" is deprecated) because the contents are written one, never changed after.
@@ -20,9 +20,6 @@ try {
 
   let resultSum = 0;
   let powerSum = 0;
-  let gamePossible = true;
-  // first, we'll assume all is good and the sets are compatible with the cubes given
-  // the result let will ad up the gameIds later
 
   for (let game of games) {
 
@@ -30,8 +27,8 @@ try {
     // with the given regular expression, match against the input string (which is one line, or one "game" of all the games)
     // this creates the const "match", a RexExpMatchArray containing the capturing groups named inside the regex.
     
-    let gameId = parseInt(match?.groups?.gameId);
-    let gameContent = match?.groups?.gameContent;
+    const gameId = parseInt(match?.groups?.gameId);
+    const gameContent = match?.groups?.gameContent;
     // from the RegExpMatchArray "match", extract the content of capturing group "gameID", writing it to the const gameId
     // same thing for gameContent
 
@@ -39,7 +36,7 @@ try {
     // to single out the sets within each game, i.e. the draws out of the bag, sepperate the string at the semicolon denominator.
     // keep in mind, we are already looking at a single game, which in the end can be "possible" or "impossible"
 
-    gamePossible = true;
+    let gamePossible = true;
     // as we start a game (or set of sets), we'll first assume the best case
 
     const redArray = [];
@@ -56,15 +53,15 @@ try {
       // after this, we habe a set, all cleaned up and ready for regexing into the different colors: blue, green and red, without set order
 
       let colorMatchArray = set.match(new RegExp(`^.*?(?<red>\\d*) red.*?$`));
-      let red = Number.parseInt(colorMatchArray?.groups?.red ?? '0');
+      const red = Number.parseInt(colorMatchArray?.groups?.red ?? '0');
       redArray.push(red);
 
       colorMatchArray = set.match(new RegExp(`^.*?(?<green>\\d*) green.*?$`));
-      let green = Number.parseInt(colorMatchArray?.groups?.green ?? '0');
+      const green = Number.parseInt(colorMatchArray?.groups?.green ?? '0');
       greenArray.push(green);
 
       colorMatchArray = set.match(new RegExp(`^.*?(?<blue>\\d*) blue.*?$`));
-      let blue = Number.parseInt(colorMatchArray?.groups?.blue ?? '0');
+      const blue = Number.parseInt(colorMatchArray?.groups?.blue ?? '0');
       blueArray.push(blue);
 
       // with regexes, we pull the number before " red", " green" and " blue". as they have no order, this can only be done in three steps(?)
@@ -88,7 +85,7 @@ try {
 
     };
 
-    let powerOfGame = Math.max(...redArray) * Math.max(...greenArray) * Math.max(...blueArray);
+    const powerOfGame = Math.max(...redArray) * Math.max(...greenArray) * Math.max(...blueArray);
     // using the spread syntax for imputting the arrays of the colored cubes into Math.max, 
     // multply together online the single biggest ammpunt of cubes for each number, writing the result into powerOfGame
     
