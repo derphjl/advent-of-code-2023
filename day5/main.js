@@ -7,7 +7,7 @@ try {
   
   //read the input file and trim the edges, removing white spaces and newlines at the ends.
   //write the contens into the contents constant. this will not be changed now, only read.
-  const contents = (await readFile('./input-small.txt', { encoding: 'utf8' })).trim();
+  const contents = (await readFile('./input.txt', { encoding: 'utf8' })).trim();
   
   //contents is one long string, but logically devided by double new lines, so we rip it apart at those seams
   //as a result, we get an array of sections, which is an array of strings
@@ -75,6 +75,7 @@ try {
     //TODO: proper error handling in case the source and destination cannot be read
     let mappingSource = sectionMatchArray?.groups?.first ?? 'fail';
     let mappingDestination = sectionMatchArray?.groups?.second ?? 'fail';
+    console.log("Writing Map from " + mappingSource + " to " + mappingDestination);
     
     //the sectionSingles are *now* gona be split along their newline breaks. These sectionSingles describe a part
     //of the map that is pre-set, so not conforming to the 1:1-mapping. we will need to go through them later.
@@ -108,6 +109,8 @@ try {
       let sourceStart = Number.parseInt( numbersOfSingle[1] );
       let relationLength = Number.parseInt( numbersOfSingle[2] );
       
+      console.log("Working on relation from " + sourceStart + " to " + destinationStart + " with length " + relationLength)
+
       //with the parameters established, write the relations into the map, starting from the respective startpoints
       //and iterating for relationLength.
       for (let i = 0; i<relationLength; i++) {
