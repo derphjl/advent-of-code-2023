@@ -28,7 +28,7 @@ try {
   //We will work with the seeds later, first we have to build all the matching-maps
   const seeds = Array.from(sections[0].matchAll(/\d+/g)).map((match) => Number.parseInt(match[0]));
   
-  console.log("Seeds:");
+  console.log("🌱 The input Seeds are: 🌱");
   console.log(seeds);
   
   //the input provides a few maps that the seed will have to "jump trough" to get to their "location" in the end. 
@@ -50,7 +50,7 @@ try {
   */
   
   //the mapCatalouge will hold all of the mapInstances, making it the central element to work with later on
-  let mapCatalouge;
+  let mapCatalouge = [];
   
   //Shift out the seeds, leaving only the map sections.
   sections.shift();
@@ -69,13 +69,12 @@ try {
     //Also, this all needs to work with the still multiline input, thus /m.
     let sectionMatchArray = section.match(/^(?<first>\w+(?=\-to\-)).*(?<second>(?<=\-to\-)\w+(?=\ {1})).*?$/m);
     
-    
     //The result of the matching group 'first' is then assigned to the variable 'first'. If the sectionMatchArray
     //does not have any groups (?) or there is no group 'first', the first part will fail. If it does, the assignment
     //fails over (??) to 'fail'
+    //TODO: proper error handling in case the source and destination cannot be read
     let mappingSource = sectionMatchArray?.groups?.first ?? 'fail';
     let mappingDestination = sectionMatchArray?.groups?.second ?? 'fail';
-    
     
     //the sectionSingles are *now* gona be split along their newline breaks. These sectionSingles describe a part
     //of the map that is pre-set, so not conforming to the 1:1-mapping. we will need to go through them later.
@@ -85,7 +84,6 @@ try {
     //already been processed with the regex earlier, extracting first and second. Further down, we only want the 'contet'
     //for the mapping.
     sectionSingles.shift();
-    
     
     //Now creating a map that will be added into the map instance for adding into the mapping catalouge at the end of 
     //the section run. Then putting the freshly created map into a currentMapInstance object to also include the 
@@ -122,10 +120,33 @@ try {
     
     //now, all mappings for the current instance (like "seed to soil") are complete and written into map1 with map1
     //put into currentMappingInstance.
-    console.log("All realtions for " + mappingSource + " to " + mappingDestination + " complete.");
+    mapCatalouge.push(currentMapInstance);
     
   }
-  
+
+//the mappings are now all done and inserted into the catalouge
+
+//write the seeds into input array for iteration trough the transformation stages
+let inputArray = seeds;
+
+//the transformation will happen map by map, thus we will iterate trough the 
+//maps in the catalouge which we have just filled
+for (let thisMap of mapCatalouge) {
+  let outputArray=[];
+  for (let element of inputArray) {
+    let output = thisMap.map.get(element) ? thisMap.map.get(element) : element;
+    outputArray.push(output);
+  }
+  inputArray = outputArray;
+}  
+
+console.log("All maps analyzed, the resulting array is"); 
+console.log(inputArray);
+console.log("The smallest numer is:");
+console.log(inputArray.sort()[0]);
+
+
+
 } catch (error) {
   console.error('there was an error:', error.message);
 }
