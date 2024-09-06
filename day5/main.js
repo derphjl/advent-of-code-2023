@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
+import { connect } from 'node:http2';
 
-console.log('🎄 Day 5 Advent of Code\n');
+console.log('🎄 Day 5 Advent of Code 🎄\n');
 
 
 try {
@@ -30,27 +31,37 @@ try {
   
   console.log("🌱 The input Seeds are: 🌱");
   console.log(seeds);
-  
+  console.log();
+
   //the input provides a few maps that the seed will have to "jump trough" to get to their "location" in the end. 
   //We will create an array of maps. First, we will get the type notations right, doing TypeScript light so to speak.
   //The Type definitions *should* go to top op file - i think - but this will work just fine as we will only be using
   //them from here on out, post-declaration
   
-  //The "MapInstance" is any one of the soil-to-fertilizer, fertilizer-to-water, etc. mappings. 
+  //The "RelationInstance" is any one of the soil-to-fertilizer, fertilizer-to-water, etc. mappings. 
   //It has a name ('soil-to-fetilizer', we'll keep the naming consistent with the input) and the correspoding map
   //This builds practically the innermost layer, holding only the string object 'name' and the map object 'map'
   /**
   * 
-  * @typedef MapInstance
+  * @typedef RelationInstance
   * @type {{
-  *   source: string;
-  *   destination: string;
-  *   map: map;
+  *   sourceName: string;
+  *   destinationName: string;
+  *   connections: Connection[];
   * }}
   */
   
-  //the mapCatalouge will hold all of the mapInstances, making it the central element to work with later on
-  let mapCatalouge = [];
+  /**
+  * 
+  * @typedef Connection
+  * @type {{
+  *   sourceNumberStart: int;
+  *   destinationNumberStart: int;
+  *   connectionLength: int;
+  * }}
+  */
+  
+  let relationsCatalouge = [];
   
   //Shift out the seeds, leaving only the map sections.
   sections.shift();
@@ -69,16 +80,10 @@ try {
     //Also, this all needs to work with the still multiline input, thus /m.
     let sectionMatchArray = section.match(/^(?<first>\w+(?=\-to\-)).*(?<second>(?<=\-to\-)\w+(?=\ {1})).*?$/m);
     
-    //The result of the matching group 'first' is then assigned to the variable 'first'. If the sectionMatchArray
-    //does not have any groups (?) or there is no group 'first', the first part will fail. If it does, the assignment
-    //fails over (??) to 'fail'
-    //TODO: proper error handling in case the source and destination cannot be read
     let mappingSource = sectionMatchArray?.groups?.first ?? 'fail';
     let mappingDestination = sectionMatchArray?.groups?.second ?? 'fail';
-    console.log("Writing Map from " + mappingSource + " to " + mappingDestination);
+    console.log("Writing Map from " + mappingSource + " to " + mappingDestination + "... done!");
     
-    //the sectionSingles are *now* gona be split along their newline breaks. These sectionSingles describe a part
-    //of the map that is pre-set, so not conforming to the 1:1-mapping. we will need to go through them later.
     let sectionSingles = section.split('\n');
     
     //because the headline "x-to-y (...)" is still an array element at this point, we shift it out. The "header" has
@@ -86,70 +91,64 @@ try {
     //for the mapping.
     sectionSingles.shift();
     
-    //Now creating a map that will be added into the map instance for adding into the mapping catalouge at the end of 
-    //the section run. Then putting the freshly created map into a currentMapInstance object to also include the 
-    //"metadata" (in this case, that's only source and destination)
-    let map1 = new Map();
+    let connection1 = [];
     /**
-    * @type {MapInstance}
+    * @type {RelationInstance}
     */
-    let currentMapInstance = {
-      source: mappingSource,
-      destination: mappingDestination,
-      map: map1,
+    let currentRelationInstance = {
+      sourceName: mappingSource,
+      destinationName: mappingDestination,
+      connections: connection1,
     };
     
-    
-    //with the data structure read to run, iterate through the sectionSingles. These triplets of numbers give: 
-    //start of destination - start of source - length of relation. This is explcitly the wrong way around from the
-    //heading, this the mapping as presented.
     for (let sectionSingle of sectionSingles) {
       let numbersOfSingle = sectionSingle.split(' ');
       let destinationStart = Number.parseInt( numbersOfSingle[0] );
       let sourceStart = Number.parseInt( numbersOfSingle[1] );
-      let relationLength = Number.parseInt( numbersOfSingle[2] );
+      let connectionLength = Number.parseInt( numbersOfSingle[2] );
       
-      console.log("Working on relation from " + sourceStart + " to " + destinationStart + " with length " + relationLength)
-
-      //with the parameters established, write the relations into the map, starting from the respective startpoints
-      //and iterating for relationLength.
-      for (let i = 0; i<relationLength; i++) {
-        map1.set(sourceStart+i,destinationStart+i);
+      /**
+      * @type {Connection}
+      */
+      let activeConnection = {
+        sourceNumberStart : sourceStart,
+        destinationNumberStart : destinationStart,
+        connectionLength: connectionLength,
       }
-      
-      //this loop will run for all the secitonSingles and add them to the map. Were there to be duplicate associations
-      //(i do not think there are), further handling would be required.
+      connection1.push(activeConnection);
     }
-    
-    //now, all mappings for the current instance (like "seed to soil") are complete and written into map1 with map1
-    //put into currentMappingInstance.
-    mapCatalouge.push(currentMapInstance);
-    
+    relationsCatalouge.push(currentRelationInstance);
   }
+  
+  let workingArray = seeds;
+  
+  for (let relation of relationsCatalouge) {
+    console.log();
+    console.log("🔍 Analyzing Relation " + relation.sourceName + " to " + relation.destinationName);
+    console.log();
+    
+    let convertedArray = [];
+    
+    for(let workingElement of workingArray){ 
+      let convertedElement = workingElement;
+      for (let connection of relation.connections){
+        let sourceNumberEnd = connection.sourceNumberStart + connection.connectionLength - 1;
+        
+        if ((workingElement >= connection.sourceNumberStart) && (workingElement <= sourceNumberEnd)) {
+          let distance = workingElement - connection.sourceNumberStart;
+          convertedElement = connection.destinationNumberStart + distance;
+          console.log("Change applied " + workingElement + " -> " + convertedElement);
+        }
+      }
+      convertedArray.push(convertedElement);
+    }
+    workingArray = convertedArray;
+  }  
 
-//the mappings are now all done and inserted into the catalouge
-
-//write the seeds into input array for iteration trough the transformation stages
-let inputArray = seeds;
-
-//the transformation will happen map by map, thus we will iterate trough the 
-//maps in the catalouge which we have just filled
-for (let thisMap of mapCatalouge) {
-  let outputArray=[];
-  for (let element of inputArray) {
-    let output = thisMap.map.get(element) ? thisMap.map.get(element) : element;
-    outputArray.push(output);
-  }
-  inputArray = outputArray;
-}  
-
-console.log("All maps analyzed, the resulting array is"); 
-console.log(inputArray);
-console.log("The smallest numer is:");
-console.log(inputArray.sort()[0]);
-
-
-
+  console.log("\nAll maps analyzed, the resulting array is"); 
+  console.log(workingArray);
+  console.log("\nThe smallest numer is " + workingArray.sort((a, b) => a - b)[0] + "\n");
+    
 } catch (error) {
   console.error('there was an error:', error.message);
 }
