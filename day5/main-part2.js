@@ -22,7 +22,7 @@ console.log('    Part  2️⃣   Many Seeds!\n');
 */
 
 try {
-  const inputFile = (await readFile('./input-small.txt', { encoding: 'utf8' })).trim();
+  const inputFile = (await readFile('./input.txt', { encoding: 'utf8' })).trim();
   const inputFileSections = inputFile.split('\n\n');
   
   const seedsSection = inputFileSections.shift();
@@ -78,59 +78,39 @@ try {
   
   function translateSeed (seed){
     for (let map of maps){
-      console.log("from " + map);
-      console.log(map);
+      // console.log("For Seed " + seed + " translating from " + map.source + " to " + map.destination );
       for (let mapLine of map.mapLines){
-        console.log(mapLine);
+        // console.log(mapLine);
+        if (seed >= mapLine.source){
+          let upperBounds = mapLine.source+mapLine.range;
+          if (seed < upperBounds){
+            let newSeed = mapLine.destination + (seed - mapLine.source);
+            // console.log(seed + " -> " + newSeed);
+            seed = newSeed;
+            break; //break if any translation has happened.
+          }
+        }
       }
     }
+    // console.log("All maps complete! Returning value " + seed + "\n\n");
+    return seed;
   };
   
   let results = [];
   
   for (let relation of seedsRelationCollection) {
     for (let seed = relation.start; seed < relation.start + relation.range ; seed++){
-      let result = translateSeed(seed); //call the translateSeed function for every single seed
+      let result = Number.parseInt(translateSeed(seed)); //call the translateSeed function for every single seed
       results.push(result);
+      results.sort((a, b) => a - b);
+      if (results.length > 3){
+        results.pop();
+      }
     }
   }
   
-  results.sort((a, b) => a - b);
   // console.log(results);
   console.log("Smallest Number in results is: " + results[0]);
-  
-  
-  // for (let relation of relationsCatalouge) {
-  //   console.log();
-  //   console.log("🔍 Analyzing Relation " + relation.sourceName + " to " + relation.destinationName);
-  //   console.log();
-  
-  //   let convertedArray = [];
-  
-  //   for(let workingElement of workingArray){ 
-  //     let convertedElement = workingElement;
-  //     for (let connection of relation.connections){
-  //       let sourceNumberEnd = connection.sourceNumberStart + connection.connectionLength;
-  
-  //       if ((workingElement >= connection.sourceNumberStart) && (workingElement < sourceNumberEnd)) {
-  //         let distance = workingElement - connection.sourceNumberStart;
-  //         convertedElement = connection.destinationNumberStart + distance;
-  //         //console.log("Change applied " + workingElement + " -> " + convertedElement);
-  //       }
-  //     }
-  //     convertedArray.push(convertedElement);
-  //   }
-  //   workingArray = convertedArray;
-  // }  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
 } catch (error) {
   console.error('there was an error:', error.message);
