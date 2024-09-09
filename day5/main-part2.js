@@ -42,19 +42,48 @@ try {
     seedsRelationCollection.push(relation1);
   }
   
+  for (let section of inputFileSections) {
+    let sectionMatchArray = section.match(/^(?<first>\w+(?=\-to\-)).*(?<second>(?<=\-to\-)\w+(?=\ {1})).*?$/m);
+    let dataRows = section.split('\n');
+    dataRows.shift(); //shifting out the headline to have only the contents (MapLines) remaining
+    
+    let mapLinesArray = [];
+    /**
+    * @type {Map}
+    */
+    let map = {
+      source: sectionMatchArray.groups.first,
+      destination: sectionMatchArray.groups.second,
+      mapLines: mapLinesArray,
+    }
+    
+    for (let dataRow of dataRows) {
+      let numbersOfSingle = dataRow.split(' ');
+      let destinationStart = Number.parseInt( numbersOfSingle[0] );
+      let sourceStart = Number.parseInt( numbersOfSingle[1] );
+      let connectionLength = Number.parseInt( numbersOfSingle[2] );
+      
+      /**
+      * @type {MapLine}
+      */
+      let mapLine = {
+        source : sourceStart,
+        destination : destinationStart,
+        range: connectionLength,
+      }
+      mapLinesArray.push(mapLine);
+    }
+    maps.push(map);
+  }
+  
   function translateSeed (seed){
-    return 1;
-    // for (let map of maps){
-    //   /**
-    //   * 
-    //   * 
-    //   * 
-    //   * TODO: DO
-    //   * 
-    //   * 
-    //   * 
-    //   */
-    // }
+    for (let map of maps){
+      console.log("from " + map);
+      console.log(map);
+      for (let mapLine of map.mapLines){
+        console.log(mapLine);
+      }
+    }
   };
   
   let results = [];
@@ -67,59 +96,8 @@ try {
   }
   
   results.sort((a, b) => a - b);
-  console.log(results);
+  // console.log(results);
   console.log("Smallest Number in results is: " + results[0]);
-  
-  
-  
-  
-  // let relationsCatalouge = [];
-  
-  
-  // for (let section of sections) {
-  //   let sectionMatchArray = section.match(/^(?<first>\w+(?=\-to\-)).*(?<second>(?<=\-to\-)\w+(?=\ {1})).*?$/m);
-  //   let mappingSource = sectionMatchArray?.groups?.first ?? 'fail';
-  //   let mappingDestination = sectionMatchArray?.groups?.second ?? 'fail';
-  //   console.log("Writing Map from " + mappingSource + " to " + mappingDestination + "... done!");
-  
-  //   let sectionSingles = section.split('\n');
-  
-  //   //because the headline "x-to-y (...)" is still an array element at this point, we shift it out. The "header" has
-  //   //already been processed with the regex earlier, extracting first and second. Further down, we only want the 'contet'
-  //   //for the mapping.
-  //   sectionSingles.shift();
-  
-  //   let connection1 = [];
-  //   /**
-  //   * @type {RelationInstance}
-  //   */
-  //   let currentRelationInstance = {
-  //     sourceName: mappingSource,
-  //     destinationName: mappingDestination,
-  //     connections: connection1,
-  //   };
-  
-  //   for (let sectionSingle of sectionSingles) {
-  //     let numbersOfSingle = sectionSingle.split(' ');
-  //     let destinationStart = Number.parseInt( numbersOfSingle[0] );
-  //     let sourceStart = Number.parseInt( numbersOfSingle[1] );
-  //     let connectionLength = Number.parseInt( numbersOfSingle[2] );
-  
-  //     /**
-  //     * @type {Connection}
-  //     */
-  //     let activeConnection = {
-  //       sourceNumberStart : sourceStart,
-  //       destinationNumberStart : destinationStart,
-  //       connectionLength: connectionLength,
-  //     }
-  //     connection1.push(activeConnection);
-  //   }
-  //   relationsCatalouge.push(currentRelationInstance);
-  // }
-  
-  
-  // let workingArray = seeds;
   
   
   // for (let relation of relationsCatalouge) {
