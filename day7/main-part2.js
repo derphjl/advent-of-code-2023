@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 console.log('🎄 Advent of Code: Day 7 - Camel Cards 🎄\n');
 
 try {
-  const linesOfInput = (await readFile('./input.txt', { encoding: 'utf8' })).trim().replaceAll('T','B').replaceAll('J','C').replaceAll('Q','D').replaceAll('K','E').replaceAll('A','F').split('\n'); //replace to make the ascii weights usable later
+  const linesOfInput = (await readFile('./input-small.txt', { encoding: 'utf8' })).trim().replaceAll('T','B').replaceAll('J','1').replaceAll('Q','D').replaceAll('K','E').replaceAll('A','F').split('\n'); //replace to make the ascii weights usable later
 
   let handsWithData = [];
   for (let line of linesOfInput){
