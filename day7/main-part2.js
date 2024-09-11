@@ -1,5 +1,13 @@
 import { readFile } from 'node:fs/promises';
 console.log('🎄 Advent of Code: Day 7 - Camel Cards 🎄\n');
+console.log(' SPECIAL HANDLING FOR PART 2 - J IS NOW SPECIAL!');
+
+// J has been re-introduced as a completely new card: Its single value has been demoted from between T and Q to below 2.
+// -> J is now represented as "1" for the valueA calculation
+// the cardTyped need reevaluation AFTER the valueA has been calculated
+// J will be transformed into the most poular letter in the card, then the cardType will be evaluated again and overridden.
+// This must be done *extra* so that hands without any J can just be left alone.
+// !!! TBD !!
 
 try {
   const linesOfInput = (await readFile('./input-small.txt', { encoding: 'utf8' })).trim().replaceAll('T','B').replaceAll('J','1').replaceAll('Q','D').replaceAll('K','E').replaceAll('A','F').split('\n'); //replace to make the ascii weights usable later
