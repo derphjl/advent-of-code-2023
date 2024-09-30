@@ -6,6 +6,13 @@ console.log('SPECIAL HANDLING FOR PART 2 - J IS NOW SPECIAL!\n');
 try {
   const linesOfInput = (await readFile('./input.txt', { encoding: 'utf8' })).trim().replaceAll('J','1').replaceAll('T','B').replaceAll('Q','D').replaceAll('K','E').replaceAll('A','F').split('\n'); //replace to make the ascii weights usable later
 
+  // From least to most valuable
+  // J -> 1
+  // T -> B
+  // Q -> D
+  // K -> E
+  // A -> F
+
   let handsWithData = [];
   for (let line of linesOfInput){
     let hand = line.match(/^.*(?=\ )/g)[0]; //the hand is the first part of the string, always followed by a space
@@ -36,6 +43,7 @@ try {
       //sort not by any arbitraty thing, but by ascii code!
       let handSortedOld = handSorted;
       handSorted = handSorted.replaceAll('1', mostValuableCharacter);
+      handSorted = handSorted.split('').sort().join('');  //sort them again! i.e. "AABBJ" -> "AABBA" -> "AAABB" -> Full House. Matches wrong otherwise!
       console.log(handSortedOld + " -> " + handSorted);
     }
 
