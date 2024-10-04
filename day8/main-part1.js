@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-console.log('🎄 Day 8 Part 1 - Navogating the desert... 🎄\n');
+console.log('🎄 Day 8 Part 1 - Navigating the desert... 🎄\n');
 
 try {
   const lines = (await readFile('./input.txt', { encoding: 'utf8' })).trim().split('\n'); //import file
@@ -7,7 +7,6 @@ try {
   moves = moves.split('');
   lines.shift();                //shift out emptyline
   let nodes = [];
-  
   
   for (let singleNode of lines) {
     let match = singleNode.match(/^(?<start>\w{3}).*(?<left>\w{3}),\ (?<right>\w{3}).*$/);   //regex out all elements of the node
