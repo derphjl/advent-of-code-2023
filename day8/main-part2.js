@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 console.log('🎄 Day 8 Part 2 - 👻 Ghosts navigating the desert... 🎄\n');
 
 try {
-  const lines = (await readFile('./input-small-part2.txt', { encoding: 'utf8' })).trim().split('\n'); //import file
+  const lines = (await readFile('./input.txt', { encoding: 'utf8' })).trim().split('\n'); //import file
   let moves = lines.shift();   //first line gives the movement string
   moves = moves.split('');
   lines.shift();               //shift out emptyline
