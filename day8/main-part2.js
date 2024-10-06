@@ -27,31 +27,31 @@ try {
   
   //### Select the "Start Nodes" -> All nodes that End in "A". Commit these to workingNodes[]
   let workingNodes = nodes.filter((node) => node.start.match(/^.*A$/g));
-  console.log('Working Nodes:');
+  console.log('Working Nodes at Start:');
   console.log(workingNodes);
   
   let stepCount = 0;
   
   //### For all of the Start Nodes, step through all the movement instructions, one instruction at a time ###
-  for (let move of moves) {
-    console.log("Move " + move);
-    stepCount++;
-    for (let i = 0; i < workingNodes.length; i++) {
-      let nextStart;
-      if (move == 'L') { 
-        nextStart = workingNodes[i].left;
-      };
-      if (move == 'R') { 
-        nextStart = workingNodes[i].right;
-      };
-      workingNodes[i] = nodes.find((a) => a.start === nextStart);      
+  do {
+    for (let move of moves) {
+      stepCount++;
+      for (let i = 0; i < workingNodes.length; i++) {
+        let nextStart;
+        if (move == 'L') { 
+          nextStart = workingNodes[i].left;
+        };
+        if (move == 'R') { 
+          nextStart = workingNodes[i].right;
+        };
+        workingNodes[i] = nodes.find((a) => a.start === nextStart);      
+      }
     }
-    console.log(stepCount + ' Steps Moved, WorkingNodes now:');
-    console.log(workingNodes);
-  }
+  } while (workingNodes.filter((a) => a.start.match(/^.*Z$/g)).length < workingNodes.length);
+  console.log(stepCount + ' Steps Moved, WorkingNodes now:');
+  console.log(workingNodes);
   
   
-
   //console.log(stepCount);
   
 } catch (error) {
